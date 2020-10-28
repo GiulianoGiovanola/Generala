@@ -21,7 +21,7 @@ function tirarDados(){
     estadoDelJuego.dados.sort((a, b) => {return a - b; });
     estadoDelJuego.contadorTiros++;
     actualizarPantalla();
-    if (estadoDelJuego.contadorTiros === 4) {
+    if (estadoDelJuego.contadorTiros === 3) {
         anotarPuntos();
     }
     
