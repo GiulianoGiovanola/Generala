@@ -88,7 +88,7 @@ function esGenerala(){
     return /1{5}|2{5}|3{5}|4{5}|5{5}|6{5}/.test(dadosComoString());
 }
 
-function puntos(dado){
+function puntos(elDado){
     let puntosSumados = 0;
     estadoDelJuego.dados.forEach(dado => {
         puntos += (elDado === dado) ? elDado : 0;
