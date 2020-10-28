@@ -96,9 +96,9 @@ function anotarPuntos(juego){
     cambiarJugador();
 }
 
-function totalPuntos(jugador){
+/*function totalPuntos(jugador){
     
-}
+}*/
 
 function cambiarJugador(){
     estadoDelJuego.contadorTiros = 0;
@@ -106,7 +106,6 @@ function cambiarJugador(){
     estadoDelJuego.dadosSeleccionados = [];
     estadoDelJuego.jugador = estadoDelJuego.jugador === 2 ? 1 : 2;
     contenedorDados.innerHTML = null;
-    //actualizarPantalla();
 }
 
 function esEscalera(){
