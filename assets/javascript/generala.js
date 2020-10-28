@@ -87,12 +87,6 @@ function anotarPuntos(juego){
         let celdaTotal = document.querySelector("#puntajes tr:nth-of-type(13)");
         celdaTotal.innerHTML = totalPuntos(estadoDelJuego.jugador);
     }
-    [1, 2, 3, 4, 5, 6].forEach(dado => { console.info (dado + "=>" + puntos(dado)); });
-    console.info("Escalera => " + esEscalera());
-    console.info("Full => " + esFull());
-    console.info("Poker => " + esPoker());
-    console.info("Generala => " + esGenerala());
-
     cambiarJugador();
 }
 
