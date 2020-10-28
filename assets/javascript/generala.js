@@ -54,7 +54,21 @@ function actualizarPantalla(){
     document.getElementById("tiro").innerHTML = estadoDelJuego.contadorTiros;
 }
 
-function anotarPuntos(){
+function anotarPuntos(juego){
+    let celda = document.querySelector("#puntajes tbody tr:nth-of-type("+ (juego + 1) +") td:nth-of-type("+ estadoDelJuego.jugador +")");
+    if(!celda.classList.contains("anotado")){
+        celda.classList.add("anotado");
+        switch(juego){
+            case 0:
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+                estadoDelJuego.puntajes[estadoDelJuego.jugador - 1][juego] = puntos[dado];
+                break;
+        }
+    }
     [1, 2, 3, 4, 5, 6].forEach(dado => { console.info (dado + "=>" + puntos(dado)); });
     console.info("Escalera => " + esEscalera());
     console.info("Full => " + esFull());
