@@ -84,6 +84,8 @@ function anotarPuntos(juego){
                 break;
         }
         celda.innerHTML = estadoDelJuego.puntajes[estadoDelJuego.jugador - 1][juego] === 0 ? "X" : estadoDelJuego.puntajes[estadoDelJuego.jugador - 1][juego];
+        let celdaTotal = document.querySelector("#puntajes tr:nth-of-type(13)");
+        celdaTotal.innerHTML = totalPuntos(estadoDelJuego.jugador);
     }
     [1, 2, 3, 4, 5, 6].forEach(dado => { console.info (dado + "=>" + puntos(dado)); });
     console.info("Escalera => " + esEscalera());
@@ -92,6 +94,10 @@ function anotarPuntos(juego){
     console.info("Generala => " + esGenerala());
 
     cambiarJugador();
+}
+
+function totalPuntos(jugador){
+    
 }
 
 function cambiarJugador(){
