@@ -5,7 +5,8 @@ let estadoDelJuego = {
     dadosSeleccionados: [],
     jugador: Math.floor(Math.random() * 2) + 1,
     contadorTiros: 0,
-    puntajes: [[0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0]]
+    puntajes: [[0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0]],
+    jugadas: 0
 }
 
 function tirarDado(){
