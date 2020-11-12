@@ -9,14 +9,6 @@ let estadoDelJuego = {
         jugadas: 0
 };
 
-/*function limpiarVisualPuntajes() {
-    document.querySelectorAll("#puntajes tbody td").forEach(celda => {
-        celda.classList.remove("jugando", "ganador");
-        celda.innerHTML = "";
-    });
-    document.querySelectorAll("#puntajes thead th").forEach(celda => celda.classList.remove("jugando", "ganador"));
-}*/
-
 function tirarDado() {
     return Math.floor(Math.random() * 6) + 1;
 }
@@ -35,37 +27,6 @@ function tirarDados() {
         forzarAnotarPuntos();
     }
 }
-
-/*function resaltarJuegosPosibles(resaltar) {
-    if (!resaltar) {
-        document.querySelectorAll("#puntajes tbody tr th").forEach(th => th.classList.remove("puntaje"));
-    } else {
-        let selector = "";
-        [1,2,3,4,5,6].forEach(dado => {
-            let celda = document.querySelector("#puntajes tbody tr:nth-of-type(" + dado + ") td.jugando");
-            if (estadoDelJuego.dados.includes(dado) && !celda.classList.contains("anotado")) {
-                selector += "#puntajes tbody tr:nth-of-type(" + dado + ") th,";
-            }
-        });
-        if (esEscalera() && !document.querySelector("#puntajes tbody tr:nth-of-type(7) td.jugando").classList.contains("anotado")) {
-            selector += "#puntajes tbody tr:nth-of-type(7) th,";
-        }
-        if (esFull() && !document.querySelector("#puntajes tbody tr:nth-of-type(8) td.jugando").classList.contains("anotado")) {
-            selector += "#puntajes tbody tr:nth-of-type(8) th,";
-        }
-        if (esPoker() && !document.querySelector("#puntajes tbody tr:nth-of-type(9) td.jugando").classList.contains("anotado")) {
-            selector += "#puntajes tbody tr:nth-of-type(9) th,";
-        }
-        if (esGenerala() && !document.querySelector("#puntajes tbody tr:nth-of-type(10) td.jugando").classList.contains("anotado")) {
-            // TODO: Si tengo anotada la generala, resaltar la doble
-            selector += "#puntajes tbody tr:nth-of-type(10) th,";
-        }
-        selector = selector.substring(0, selector.length - 1);
-        if (selector.length > 0) {
-            document.querySelectorAll(selector).forEach(th => th.classList.add("puntaje"));
-        }
-    }
-}*/
 
 function forzarAnotarPuntos() {
     habilitarBoton(false);
@@ -201,7 +162,6 @@ function quienGano() {
 }
 
 function cambiarJugador() {
-    // Actualizar estado del juego
     estadoDelJuego.contTiros = 0;
     estadoDelJuego.dados = [];
     estadoDelJuego.dadosSeleccionados = [];
