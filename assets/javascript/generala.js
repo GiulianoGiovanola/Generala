@@ -1,65 +1,103 @@
 let contenedorDados = document.getElementById("contenedorDados");
-
+let totalpuntaje1, totalpuntaje2;
 let estadoDelJuego = {
-    dados: [],
-    dadosSeleccionados: [],
-    jugador: Math.floor(Math.random() * 2) + 1,
-    contadorTiros: 0,
-    puntajes: [[0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0]],
-    jugadas: 0
+        dados: [],
+        dadosSeleccionados: [],
+        jugador: Math.floor(Math.random() * 2) + 1,
+        contTiros: 0,
+        puntajes: [[0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0]],
+        jugadas: 0
+};
+
+/*function limpiarVisualPuntajes() {
+    document.querySelectorAll("#puntajes tbody td").forEach(celda => {
+        celda.classList.remove("jugando", "ganador");
+        celda.innerHTML = "";
+    });
+    document.querySelectorAll("#puntajes thead th").forEach(celda => celda.classList.remove("jugando", "ganador"));
+}*/
+
+function tirarDado() {
+    return Math.floor(Math.random() * 6) + 1;
 }
 
-function tirarDado(){
-    return Math.floor(Math.random()* 6) + 1;
-}
-
-function tirarDados(){
-    if(estadoDelJuego.dadosSeleccionados.length === 0){
+function tirarDados() {
+    if (estadoDelJuego.dadosSeleccionados.length === 0) {
         estadoDelJuego.dadosSeleccionados = [0, 1, 2, 3, 4];
     }
     estadoDelJuego.dadosSeleccionados.forEach(indice => {
         estadoDelJuego.dados[indice] = tirarDado();
     });
-    estadoDelJuego.dados.sort((a, b) => {return a - b; });
-    estadoDelJuego.contadorTiros++;
+    estadoDelJuego.dados.sort((a, b) => { return a - b; });
+    estadoDelJuego.contTiros++;
     actualizarPantalla();
-    if (estadoDelJuego.contadorTiros === 3) {
-        anotarPuntos();
+    if (estadoDelJuego.contTiros === 3) {
+        forzarAnotarPuntos();
     }
-    
 }
 
-function actualizarPantalla(){
-    estadoDelJuego.dadosSeleccionados = [];
-    contenedorDados.innerHTML = null;
-    for(let i=0; i<5; i++){
-        let dado = document.createElement("div");
-        let imgdado = document.createElement("img");
-        imgdado.setAttribute("src", "assets/css/img/dado_" + estadoDelJuego.dados[i] + ".png")
-        imgdado.setAttribute("data-dado-index", i);
-        dado.appendChild(imgdado);
-        contenedorDados.appendChild(dado);
-
-        imgdado.onclick = evt => {
-            let dadoSeleccionado = parseInt(evt.target.getAttribute("data-dado-index"));
-            if(estadoDelJuego.dadosSeleccionados.indexOf(dadoSeleccionado) === -1){
-                estadoDelJuego.dadosSeleccionados.push(dadoSeleccionado);
-                evt.target.classList.add("seleccionado");
-            } else{
-                estadoDelJuego.dadosSeleccionados.splice(estadoDelJuego.dadosSeleccionados.indexOf(dadoSeleccionado), 1);
-                evt.target.classList.remove("seleccionado");
+/*function resaltarJuegosPosibles(resaltar) {
+    if (!resaltar) {
+        document.querySelectorAll("#puntajes tbody tr th").forEach(th => th.classList.remove("puntaje"));
+    } else {
+        let selector = "";
+        [1,2,3,4,5,6].forEach(dado => {
+            let celda = document.querySelector("#puntajes tbody tr:nth-of-type(" + dado + ") td.jugando");
+            if (estadoDelJuego.dados.includes(dado) && !celda.classList.contains("anotado")) {
+                selector += "#puntajes tbody tr:nth-of-type(" + dado + ") th,";
             }
-        };
+        });
+        if (esEscalera() && !document.querySelector("#puntajes tbody tr:nth-of-type(7) td.jugando").classList.contains("anotado")) {
+            selector += "#puntajes tbody tr:nth-of-type(7) th,";
+        }
+        if (esFull() && !document.querySelector("#puntajes tbody tr:nth-of-type(8) td.jugando").classList.contains("anotado")) {
+            selector += "#puntajes tbody tr:nth-of-type(8) th,";
+        }
+        if (esPoker() && !document.querySelector("#puntajes tbody tr:nth-of-type(9) td.jugando").classList.contains("anotado")) {
+            selector += "#puntajes tbody tr:nth-of-type(9) th,";
+        }
+        if (esGenerala() && !document.querySelector("#puntajes tbody tr:nth-of-type(10) td.jugando").classList.contains("anotado")) {
+            // TODO: Si tengo anotada la generala, resaltar la doble
+            selector += "#puntajes tbody tr:nth-of-type(10) th,";
+        }
+        selector = selector.substring(0, selector.length - 1);
+        if (selector.length > 0) {
+            document.querySelectorAll(selector).forEach(th => th.classList.add("puntaje"));
+        }
+    }
+}*/
+
+function forzarAnotarPuntos() {
+    habilitarBoton(false);
+    document.querySelectorAll("#contenedorDados div img").forEach(img => {
+        img.onclick = null;
+    });
+}
+
+function actualizarPantalla() {
+    estadoDelJuego.dadosSeleccionados = [];
+    if (estadoDelJuego.dados.length === 0) {
+        dadosReset();
+    } else {
+        contenedorDados.innerHTML = null;
+        for (let i = 0; i < 5; i++) {
+            contenedorDados.appendChild(dibujarDado(i, estadoDelJuego.dados[i], true));
+        }    
     }
     document.getElementById("turno").innerHTML = estadoDelJuego.jugador;
-    document.getElementById("tiro").innerHTML = estadoDelJuego.contadorTiros;
+    document.getElementById("tiro").innerHTML = estadoDelJuego.contTiros;
+    document.querySelectorAll("#puntajes tbody td").forEach(celda => celda.classList.remove("jugando"));
+    document.querySelectorAll("#puntajes tbody td:nth-of-type(" + estadoDelJuego.jugador + ")").forEach(celda => celda.classList.add("jugando"));
+    document.querySelectorAll("#puntajes thead th").forEach(celda => celda.classList.remove("jugando"));
+    document.querySelectorAll("#puntajes thead th:nth-of-type(" + (estadoDelJuego.jugador + 1) + ")").forEach(celda => celda.classList.add("jugando"));
 }
 
-function anotarPuntos(juego){
-    let celda = document.querySelector("#puntajes tbody tr:nth-of-type("+ (juego + 1) +") td:nth-of-type("+ estadoDelJuego.jugador +")");
-    if(!celda.classList.contains("anotado")){
-        celda.classList.add("anotado");
-        switch(juego){
+function anotarPuntos(juego) {
+    let celda = document.querySelector("#puntajes tr:nth-of-type(" + (juego + 1) + ") td:nth-of-type(" + (estadoDelJuego.jugador + 1) + ")");
+    if (!celda.classList.contains("anotado")) {
+        let generalaForzadaPorDoble = false;
+        let dobleForzadaPorGenerala = false;
+        switch (juego) {
             case 0:
             case 1:
             case 2:
@@ -69,64 +107,184 @@ function anotarPuntos(juego){
                 estadoDelJuego.puntajes[estadoDelJuego.jugador - 1][juego] = puntos(juego + 1);
                 break;
             case 6:
-                estadoDelJuego.puntajes[estadoDelJuego.jugador - 1][juego] = esEscalera() ? 20 : 0;
-                breakl;
+                estadoDelJuego.puntajes[estadoDelJuego.jugador - 1][juego] = esEscalera() ? puntosJuegoEspecial(20) : 0;
+                break;
             case 7:
-                estadoDelJuego.puntajes[estadoDelJuego.jugador - 1][juego] = esFull() ? 30 : 0;
+                estadoDelJuego.puntajes[estadoDelJuego.jugador - 1][juego] = esFull() ? puntosJuegoEspecial(30) : 0;
                 break;
             case 8:
-                estadoDelJuego.puntajes[estadoDelJuego.jugador - 1][juego] = esPoker() ? 40 : 0;
+                estadoDelJuego.puntajes[estadoDelJuego.jugador - 1][juego] = esPoker() ? puntosJuegoEspecial(40) : 0;
                 break;
             case 9:
-                estadoDelJuego.puntajes[estadoDelJuego.jugador - 1][juego] = esGenerala() ? 50 : 0;
+                if (esGenerala()) { 
+                    if (estadoDelJuego.contTiros === 1) {
+                        estadoDelJuego.puntajes[(estadoDelJuego.jugador - 1)][juego] = 1000;
+                        juegoTerminado();
+                    }else{
+                        estadoDelJuego.puntajes[estadoDelJuego.jugador - 1][juego] = puntosJuegoEspecial(50);
+                    }
+                } else {
+                    if (document.querySelector("#puntajes tr:nth-of-type(11) td:nth-of-type(" + estadoDelJuego.jugador + ")").classList.contains("anotado")) {
+                        estadoDelJuego.puntajes[estadoDelJuego.jugador - 1][juego] = 0;
+                    } else {
+                        estadoDelJuego.puntajes[estadoDelJuego.jugador - 1][10] = 0;
+                        dobleForzadaPorGenerala = true;
+                    }
+                }
                 break;
             case 10:
-                estadoDelJuego.puntajes[estadoDelJuego.jugador - 1][juego] = esGenerala() ? 100 : 0;
+                debugger
+                if (esGenerala()) {
+                    estadoDelJuego.puntajes[estadoDelJuego.jugador - 1][juego] = 0;
+                } else {
+                    if (estadoDelJuego.puntajes[estadoDelJuego.jugador - 1][juego][9] > 0) {
+                        estadoDelJuego.puntajes[estadoDelJuego.jugador - 1][juego] = puntosJuegoEspecial(100);
+                    } else {
+                        // estadoDelJuego.puntajes[estadoDelJuego.jugador - 1][9] = puntosJuegoEspecial(50);
+                        generalaForzadaPorDoble = true;
+                    }
+                }
                 break;
         }
-        celda.innerHTML = estadoDelJuego.puntajes[estadoDelJuego.jugador - 1][juego] === 0 ? "X" : estadoDelJuego.puntajes[estadoDelJuego.jugador - 1][juego];
-        let celdaTotal = document.querySelector("#puntajes tr:nth-of-type(13)");
-        celdaTotal.innerHTML = totalPuntos(estadoDelJuego.jugador);
+
+        if (!generalaForzadaPorDoble && !dobleForzadaPorGenerala) {
+            celda.innerHTML = estadoDelJuego.puntajes[estadoDelJuego.jugador - 1][juego] === 0 ? "X" : estadoDelJuego.puntajes[estadoDelJuego.jugador - 1][juego];
+            celda.classList.add("anotado");
+        } else if (generalaForzadaPorDoble) {
+            let celdaG = document.querySelector("#puntajes tr:nth-of-type(11) td:nth-of-type(" + (estadoDelJuego.jugador + 1) + ")");
+            celdaG.innerHTML = estadoDelJuego.puntajes[estadoDelJuego.jugador - 1][9] === 0 ? "X" : estadoDelJuego.puntajes[estadoDelJuego.jugador - 1][9];
+            celdaG.classList.add("anotado");
+        } else if (dobleForzadaPorGenerala) {
+            let celdaDG = document.querySelector("#puntajes tr:nth-of-type(10) td:nth-of-type(" + (estadoDelJuego.jugador + 1) + ")");
+            celdaDG.innerHTML = "X";
+            celdaDG.classList.add("anotado");
+        }
+        let celdaTotal = document.querySelector("#puntajes tr:nth-of-type(12) td:nth-of-type(" + (estadoDelJuego.jugador + 1) + ")");
+        celdaTotal.innerHTML = totalPuntos();
+        cambiarJugador();
     }
-    cambiarJugador();
 }
 
-/*function totalPuntos(jugador){
-    
-}*/
+function puntosJuegoEspecial(puntosJuego) {
+    return estadoDelJuego.contTiros === 1 ? puntosJuego + 5 : puntosJuego;
+}
 
-function cambiarJugador(){
-    estadoDelJuego.contadorTiros = 0;
+function totalPuntos() {
+    return estadoDelJuego.puntajes[estadoDelJuego.jugador - 1].reduce((total, puntaje) => {
+        return total + puntaje;
+    }, 0);
+}
+
+function quienGano() {
+    estadoDelJuego.puntajes[0].reduce((total, puntaje) => {
+        totalpuntaje1 = total + puntaje;
+        return total + puntaje;
+    }, 0);
+    estadoDelJuego.puntajes[1].reduce((total, puntaje) => {
+        totalpuntaje2 = total + puntaje;
+        return total + puntaje;
+    }, 0);
+
+    if (totalpuntaje1 < totalpuntaje2) {
+        document.getElementById("mostrarganador").style.display = "inline-block";
+        document.getElementById("mostrarganador").innerHTML = "Ganó el jugador 2"
+        document.getElementById("botonTirarDados").style.display = "none";
+    } else if (totalpuntaje2 < totalpuntaje1) {
+        document.getElementById("mostrarganador").style.display = "inline-block";
+        document.getElementById("mostrarganador").innerHTML = "Ganó el jugador 1";
+        document.getElementById("botonTirarDados").style.display = "none";
+    } else {
+        document.getElementById("mostrarganador").style.display = "inline-block";
+        document.getElementById("mostrarganador").innerHTML = "Empate!";
+        document.getElementById("botonTirarDados").style.display = "none";
+    }
+}
+
+function cambiarJugador() {
+    // Actualizar estado del juego
+    estadoDelJuego.contTiros = 0;
     estadoDelJuego.dados = [];
     estadoDelJuego.dadosSeleccionados = [];
     estadoDelJuego.jugador = estadoDelJuego.jugador === 2 ? 1 : 2;
+    estadoDelJuego.jugadas++;
+    actualizarPantalla();
+    if (estadoDelJuego.jugadas === 11 * estadoDelJuego.puntajes.length) {
+        juegoTerminado();
+    }
+    habilitarBoton(true);
+}
+
+function habilitarBoton(habilitar) {
+    let boton = document.querySelector("#botonTirarDados a");
+    if (habilitar) {
+        boton.setAttribute("href", "javascript:tirarDados();");
+        boton.classList.remove("disabled");
+    } else {
+        boton.removeAttribute("href");
+        boton.classList.add("disabled");
+    }
+}
+
+function dadosReset() {
     contenedorDados.innerHTML = null;
+    for (let i = 0; i < 5; i++) {
+        contenedorDados.appendChild(dibujarDado(i, 0));
+    }
 }
 
-function esEscalera(){
-    return /12345|23456|13456/.test(dadosComoString())== null;
+function dibujarDado(i, valor, setupHandler) {
+    let dado = document.createElement("div");
+    let imgdado = document.createElement("img");
+    imgdado.setAttribute("src", "assets/css/img/dado_" + valor + ".png");
+    imgdado.setAttribute("data-dado-index", i);
+    dado.appendChild(imgdado);
+
+    if (setupHandler) {
+        imgdado.onclick = evt => {
+            let dadoSeleccionado = parseInt(evt.target.getAttribute("data-dado-index"));
+            if (estadoDelJuego.dadosSeleccionados.indexOf(dadoSeleccionado) === -1) {
+                estadoDelJuego.dadosSeleccionados.push(dadoSeleccionado);
+                evt.target.classList.add("seleccionado");
+            } else {
+                estadoDelJuego.dadosSeleccionados.splice(estadoDelJuego.dadosSeleccionados.indexOf(dadoSeleccionado), 1);
+                evt.target.classList.remove("seleccionado");
+            }
+        };
+    }
+
+    return dado;
 }
 
-function esFull(){
-    return /1{3}(22|33|44|55|66)|2{3}(33|44|55|66)|3{3}(44|55|66)|4{3}(55|66)|5{3}(66)|1{2}(222|333|444|555|666)|2{2}(333|444|555|666)|3{2}(444|555|666)|4{2}(555|666)|5{2}(666)/.test(dadosComoString()) !== null;
+function juegoTerminado() {
+    quienGano();
+    habilitarBoton(false);
+    document.getElementById("botonReiniciarJuego").style.display = "inline-block";
 }
 
-function esPoker(){
+function esEscalera() {
+    return /12345|23456|13456/.test(dadosComoString());
+}
+
+function esFull() {
+    return /1{3}(22|33|44|55|66)|2{3}(33|44|55|66)|3{3}(44|55|66)|4{3}(55|66)|5{3}(66)|1{2}(222|333|444|555|666)|2{2}(333|444|555|666)|3{2}(444|555|666)|4{2}(555|666)|5{2}(666)/.test(dadosComoString());
+}
+
+function esPoker() {
     return /1{4}|2{4}|3{4}|4{4}|5{4}|6{4}/.test(dadosComoString());
 }
 
-function esGenerala(){
+function esGenerala() {
     return /1{5}|2{5}|3{5}|4{5}|5{5}|6{5}/.test(dadosComoString());
 }
 
-function puntos(elDado){
+function puntos(elDado) {
     let puntosSumados = 0;
     estadoDelJuego.dados.forEach(dado => {
-        puntos += (elDado === dado) ? elDado : 0;
-    })
+        puntosSumados += (elDado === dado) ? elDado : 0;
+    });
     return puntosSumados;
 }
 
-function dadosComoString(){
+function dadosComoString() {
     return estadoDelJuego.dados.join('');
 }
